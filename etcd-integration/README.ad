@@ -1,0 +1,8 @@
+brew install etcd
+
+https://github.com/jplana/python-etcd
+python setup.py install
+
+curl "192.168.59.103:4001/v2/keys/vertxms/ms1?wait=true&recursive=true"
+
+etcdctl exec-watch --recursive / -- ./build_cfg_and_reload.sh
