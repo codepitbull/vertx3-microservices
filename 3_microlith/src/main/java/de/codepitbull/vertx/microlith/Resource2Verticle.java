@@ -22,9 +22,7 @@ public class Resource2Verticle extends AbstractVerticle {
         port = config().getInteger(CONFIG_PORT, 8000);
 
         Router router = Router.router(vertx);
-        router.get("/" + SERVICENAME+"/*").failureHandler(fail -> {
-            System.out.println("FAILED");
-        }).handler(req -> {
+        router.get("/" + SERVICENAME+"/*").handler(req -> {
             vertx.eventBus().<Long>send(ADDRESS_CALCULATION, 1, reply -> {
                 req.response().end("servic2 -> timestamp: " + reply.result().body());
                 req.response().close();

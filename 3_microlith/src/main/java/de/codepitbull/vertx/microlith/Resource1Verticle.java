@@ -18,12 +18,10 @@ public class Resource1Verticle extends AbstractVerticle {
     private Integer port;
     @Override
     public void start(Future<Void> startFuture) throws Exception {
-        port = config().getInteger(CONFIG_PORT, 8000);
+        port = config().getInteger(CONFIG_PORT, 8001);
 
         Router router = Router.router(vertx);
-        router.get("/"+SERVICENAME+"/*").failureHandler(fail -> {
-            System.out.println("FAILED");
-        }).handler(req -> {
+        router.get("/"+SERVICENAME+"/*").handler(req -> {
             vertx.eventBus().<Long>send(ADDRESS_CALCULATION, 1, reply -> {
                 req.response().end("service1 -> timestamp: " + reply.result().body());
                 req.response().close();

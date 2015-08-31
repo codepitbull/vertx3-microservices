@@ -13,9 +13,7 @@ import static de.codepitbull.vertx.microlith.Resource2Verticle.CONFIG_PORT;
 public class OnlyResource2Main {
     public static void main(String[] args) {
         Vertx.clusteredVertx(new VertxOptions(), res -> {
-            res.result().deployVerticle(Resource2Verticle.class.getName(),
-                    new DeploymentOptions()
-                            .setConfig(new JsonObject().put(CONFIG_PORT, 8001)));
+            res.result().deployVerticle(Resource2Verticle.class.getName());
         });
     }
 }

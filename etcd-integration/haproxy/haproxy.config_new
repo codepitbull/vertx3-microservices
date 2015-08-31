@@ -1,0 +1,19 @@
+global
+    daemon
+defaults
+    log      global
+    option   dontlognull
+    timeout  connect 5s
+    timeout  client  1m
+    timeout  server  1m
+    option   redispatch
+
+listen stats :8088
+    mode http
+    stats enable
+    stats uri /haproxy
+    stats refresh 5s
+
+frontend shared-frontend
+    mode http
+    bind localhost:7777
