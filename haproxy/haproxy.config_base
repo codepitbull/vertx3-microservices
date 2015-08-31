@@ -3,6 +3,8 @@ global
 defaults
     log      global
     option   dontlognull
+    option http-pretend-keepalive
+    option forceclose
     timeout  connect 5s
     timeout  client  1m
     timeout  server  1m

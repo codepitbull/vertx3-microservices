@@ -1,18 +1,16 @@
-package de.codepitbull.vertx.microservice;
+package de.codepitbull.vertx.etcd;
 
-import io.vertx.core.AsyncResult;
 import io.vertx.core.AsyncResultHandler;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.impl.FutureFactoryImpl;
+import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
-import io.vertx.rxjava.core.Vertx;
-import io.vertx.rxjava.core.http.HttpClient;
-import io.vertx.rxjava.core.http.HttpClientResponse;
 
+import static io.vertx.core.http.HttpHeaders.APPLICATION_X_WWW_FORM_URLENCODED;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 import static org.apache.commons.lang3.Validate.notNull;
 
@@ -45,16 +43,19 @@ public class EtcdRegistration {
         );
     }
 
-    public void start(AsyncResultHandler<Void> asyncResultHandler) {
+    public void connect(AsyncResultHandler<Void> asyncResultHandler) {
         connectToEtcd(vertx, httpClient, servicename, nodename, ttl, hostAndPort, asyncResultHandler);
     }
 
-    public void stop() {
+    public void disconnect(Future<Void> stopFuture) {
         deleteInstanceNode(httpClient, servicename, nodename, res -> {
-            if (res.statusCode() == 201)
+            if (res.statusCode() == 200) {
+                stopFuture.complete();
                 LOG.info("Successfully unregistered " + nodename);
-            else
+            } else {
+                stopFuture.fail("(" + res.statusCode() + ") => " + res.statusMessage());
                 LOG.error("Failed unregistering " + nodename + " (" + res.statusCode() + ") " + res.statusMessage());
+            }
         });
     }
 
@@ -63,19 +64,21 @@ public class EtcdRegistration {
         createServiceNode(httpClient, servicename,
                 pathCreated -> {
                     //403 means the directory already existed
-                    if (pathCreated.statusCode() == 201 || pathCreated.statusCode() == 403)
+                    if (pathCreated.statusCode() == 200 || pathCreated.statusCode() == 201 || pathCreated.statusCode() == 403)
                         createInstanceNode(httpClient, servicename, nodename, "value=" + hostAndPort + "&ttl=" + ttl,
                                 nodeCreated -> {
-                                    if (nodeCreated.statusCode() == 201)
+                                    if (nodeCreated.statusCode() == 200 || nodeCreated.statusCode() == 201) {
+                                        LOG.info("Succeeded registering");
                                         vertx.setPeriodic((ttl - 4) * 1000,
                                                 refresh -> createInstanceNode(httpClient, servicename, nodename, "value=" + hostAndPort + "&ttl=" + ttl, refreshed -> {
                                                     if (refreshed.statusCode() != 200) {
                                                         LOG.error("Unable to refresh node (" + refreshed.statusCode() + ") " + refreshed.statusMessage());
-                                                        asyncResultHandler.handle(Future.factory.completedFuture("Unable refresh node (" + refreshed.statusCode() + ") " + refreshed.statusMessage(), true));
                                                     }
                                                 }));
+                                        asyncResultHandler.handle(Future.factory.completedFuture(null));
+                                    }
                                     else {
-                                        LOG.error("Unable to create node node (" + nodeCreated.statusCode() + ") " + nodeCreated.statusMessage());
+                                        LOG.error("Unable to create node (" + nodeCreated.statusCode() + ") " + nodeCreated.statusMessage());
                                         asyncResultHandler.handle(Future.factory.completedFuture("Unable to create node node (" + nodeCreated.statusCode() + ") " + nodeCreated.statusMessage(), true));
                                     }
 
@@ -90,7 +93,7 @@ public class EtcdRegistration {
     public static void createServiceNode(HttpClient client, String serviceName, Handler<HttpClientResponse> responseHandler) {
         client
                 .put(ETCD_BASE_PATH + serviceName)
-                .putHeader(CONTENT_TYPE.toString(), HttpHeaders.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+                .putHeader(CONTENT_TYPE.toString(), APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .handler(responseHandler)
                 .end("dir=true");
     }
@@ -98,7 +101,7 @@ public class EtcdRegistration {
     public static void createInstanceNode(HttpClient client, String serviceName, String name, String data, Handler<HttpClientResponse> responseHandler) {
         client
                 .put(ETCD_BASE_PATH + serviceName + "/" +name)
-                .putHeader(CONTENT_TYPE.toString(), HttpHeaders.APPLICATION_X_WWW_FORM_URLENCODED.toString())
+                .putHeader(CONTENT_TYPE.toString(), APPLICATION_X_WWW_FORM_URLENCODED.toString())
                 .handler(responseHandler)
                 .end(data);
     }
@@ -121,7 +124,8 @@ public class EtcdRegistration {
         private int ttl;
         private String nodename;
         private String servicename;
-        private String hostAndPort;
+        private String serviceHost;
+        private Integer servicePort;
 
         public Builder vertx(Vertx vertx) {
             this.vertx = vertx;
@@ -153,8 +157,13 @@ public class EtcdRegistration {
             return this;
         }
 
-        public Builder hostAndPort(String hostAndPort) {
-            this.hostAndPort = hostAndPort;
+        public Builder serviceHost(String serviceHost) {
+            this.serviceHost = serviceHost;
+            return this;
+        }
+
+        public Builder servicePort(Integer servicePort) {
+            this.servicePort = servicePort;
             return this;
         }
 
@@ -164,9 +173,10 @@ public class EtcdRegistration {
             notNull(etcdPort, "etcdPort must not be null");
             notNull(ttl, "ttl must not be null");
             notNull(servicename, "servicename must not be null");
-            notNull(hostAndPort, "hostAndPort must not be null");
+            notNull(serviceHost, "serviceHost must not be null");
+            notNull(servicePort, "servicePort must not be null");
             notNull(nodename, "nodename must not be null");
-            return new EtcdRegistration(vertx, etcdHost, etcdPort, ttl, servicename, nodename, hostAndPort);
+            return new EtcdRegistration(vertx, etcdHost, etcdPort, ttl, servicename, nodename, serviceHost+":"+servicePort);
         }
 
     }
