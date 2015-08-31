@@ -15,6 +15,7 @@
         <module>0_basics</module>
         <module>1_fatjar</module>
         <module>2_mavenverticle</module>
+        <module>3_microlith</module>
     </modules>
 
 </project>

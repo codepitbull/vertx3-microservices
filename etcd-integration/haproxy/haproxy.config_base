@@ -3,13 +3,10 @@ global
 defaults
     log      global
     option   dontlognull
-    option http-pretend-keepalive
-    option forceclose
     timeout  connect 5s
     timeout  client  1m
     timeout  server  1m
     option   redispatch
-    balance  roundrobin
 
 listen stats :8088
     mode http
