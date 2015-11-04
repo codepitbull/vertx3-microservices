@@ -1,6 +1,5 @@
 package de.codepitbull.vertx.basic;
 
-import de.codepitbull.vertx.basic.HttpVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -11,9 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * Created by jmader on 31.08.15.
- */
+
 @RunWith(VertxUnitRunner.class)
 public class HttpVerticleTest {
     @Rule

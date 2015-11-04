@@ -1,17 +1,13 @@
-package de.codepitbull.vertx.microlith;
+package de.codepitbull.vertx.microlith2;
 
 import de.codepitbull.vertx.etcd.EtcdRegistration;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.ext.web.Router;
 
-import static de.codepitbull.vertx.microlith.CalculationVerticle.ADDRESS_CALCULATION;
 
-/**
- * Created by jmader on 31.08.15.
- */
 public class Resource2Verticle extends AbstractVerticle {
-
+    public static final String ADDRESS_CALCULATION = "calculation";
     public static final String CONFIG_PORT = "port";
     public static final String SERVICENAME = "service2";
 
@@ -22,9 +18,13 @@ public class Resource2Verticle extends AbstractVerticle {
         port = config().getInteger(CONFIG_PORT, 8000);
 
         Router router = Router.router(vertx);
-        router.get("/" + SERVICENAME+"/*").handler(req -> {
-            vertx.eventBus().<Long>send(ADDRESS_CALCULATION, 1, reply -> {
-                req.response().end("servic2 -> timestamp: " + reply.result().body());
+        router.get("/" + SERVICENAME + "/*").handler(req -> {
+            vertx.eventBus().<String>send(ADDRESS_CALCULATION, 1, reply -> {
+                if(reply.failed())
+                    req.response().end("servic2 ("+hashCode()+") -> no reply");
+                else
+                    req.response().end("servic2 ("+hashCode()+") -> response: " + reply.result().body());
+
                 req.response().close();
             });
         });

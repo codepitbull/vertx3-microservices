@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.codepitbull.vertx.microservice</groupId>
-    <artifactId>microlith</artifactId>
+    <artifactId>microlith2</artifactId>
     <version>1.0-SNAPSHOT</version>
     <parent>
         <groupId>de.codepitbull.vertx.microservice</groupId>
@@ -14,7 +14,7 @@
         <relativePath>../parent</relativePath>
     </parent>
     <properties>
-        <main.verticle>de.codepitbull.vertx.microlith.MainVerticle</main.verticle>
+        <main.verticle>de.codepitbull.vertx.microlith2.MainVerticle</main.verticle>
     </properties>
     <dependencies>
         <dependency>
@@ -23,15 +23,15 @@
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
             <artifactId>vertx-hazelcast</artifactId>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-rx-java</artifactId>
+            <artifactId>vertx-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-auth-common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -40,11 +40,6 @@
         <dependency>
             <groupId>de.codepitbull.vertx.microservice</groupId>
             <artifactId>etcd-integration</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.englishtown.vertx</groupId>
-            <artifactId>vertx-when</artifactId>
-            <version>4.0.0</version>
         </dependency>
 
         <!-- TEST DEPS -->

@@ -10,6 +10,10 @@ import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static io.vertx.core.http.HttpHeaders.APPLICATION_X_WWW_FORM_URLENCODED;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 import static org.apache.commons.lang3.Validate.notNull;
@@ -21,12 +25,15 @@ public class EtcdRegistration {
 
     private final static Logger LOG = LoggerFactory.getLogger(EtcdRegistration.class);
 
+    private static final List<Integer> SUCCESS_CODES = Collections.unmodifiableList(Arrays.asList(200, 201, 403));
+
     private Vertx vertx;
     private int ttl;
     private String servicename;
     private String hostAndPort;
     private HttpClient httpClient;
     private String nodename;
+
 
     public static final String ETCD_BASE_PATH = "/v2/keys/";
 
@@ -64,18 +71,11 @@ public class EtcdRegistration {
         createServiceNode(httpClient, servicename,
                 pathCreated -> {
                     //403 means the directory already existed
-                    if (pathCreated.statusCode() == 200 || pathCreated.statusCode() == 201 || pathCreated.statusCode() == 403)
+                    if (SUCCESS_CODES.contains(pathCreated.statusCode()))
                         createInstanceNode(httpClient, servicename, nodename, "value=" + hostAndPort + "&ttl=" + ttl,
                                 nodeCreated -> {
-                                    if (nodeCreated.statusCode() == 200 || nodeCreated.statusCode() == 201) {
-                                        LOG.info("Succeeded registering");
-                                        vertx.setPeriodic((ttl - 4) * 1000,
-                                                refresh -> createInstanceNode(httpClient, servicename, nodename, "value=" + hostAndPort + "&ttl=" + ttl, refreshed -> {
-                                                    if (refreshed.statusCode() != 200) {
-                                                        LOG.error("Unable to refresh node (" + refreshed.statusCode() + ") " + refreshed.statusMessage());
-                                                    }
-                                                }));
-                                        asyncResultHandler.handle(Future.factory.completedFuture(null));
+                                    if (SUCCESS_CODES.contains(nodeCreated.statusCode()) || 403 == nodeCreated.statusCode()) {
+                                        startNodeRefresh(vertx, httpClient, servicename, nodename, ttl, hostAndPort, asyncResultHandler);
                                     }
                                     else {
                                         LOG.error("Unable to create node (" + nodeCreated.statusCode() + ") " + nodeCreated.statusMessage());
@@ -88,6 +88,17 @@ public class EtcdRegistration {
                         asyncResultHandler.handle(Future.factory.completedFuture("Unable to create service node (" + pathCreated.statusCode() + ") " + pathCreated.statusMessage(), true));
                     }
                 });
+    }
+
+    private static void startNodeRefresh(Vertx vertx, HttpClient httpClient, String servicename, String nodename, int ttl, String hostAndPort, AsyncResultHandler<Void> asyncResultHandler) {
+        LOG.info("Succeeded registering");
+        vertx.setPeriodic((ttl - 4) * 1000,
+                refresh -> createInstanceNode(httpClient, servicename, nodename, "value=" + hostAndPort + "&ttl=" + ttl, refreshed -> {
+                    if (refreshed.statusCode() != 200) {
+                        LOG.error("Unable to refresh node (" + refreshed.statusCode() + ") " + refreshed.statusMessage());
+                    }
+                }));
+        asyncResultHandler.handle(Future.factory.completedFuture(null));
     }
 
     public static void createServiceNode(HttpClient client, String serviceName, Handler<HttpClientResponse> responseHandler) {

@@ -9,9 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * Created by jmader on 31.08.15.
- */
+
 @RunWith(VertxUnitRunner.class)
 public class HttpVerticleTest {
     @Rule

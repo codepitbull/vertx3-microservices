@@ -5,9 +5,7 @@ import io.vertx.core.Future;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
-/**
- * Created by jmader on 31.08.15.
- */
+
 public class EventBusVerticle extends AbstractVerticle {
 
     private final Logger LOG = LoggerFactory.getLogger(EventBusVerticle.class);
@@ -21,6 +19,7 @@ public class EventBusVerticle extends AbstractVerticle {
         vertx.eventBus().<Integer>consumer(ADDRESS_REQUEST_COUNT).handler(msg -> {
             counter += msg.body();
             LOG.info("COUNT: "+counter);
+            msg.reply(counter+" "+hashCode());
         });
     }
 }

@@ -4,9 +4,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.ext.web.Router;
 
-/**
- * Created by jmader on 31.08.15.
- */
+
 public class HttpVerticle extends AbstractVerticle {
     @Override
     public void start(Future<Void> startFuture) throws Exception {

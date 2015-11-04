@@ -1,12 +1,9 @@
 package de.codepitbull.vertx.microlith;
 
-import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 
-/**
- * Created by jmader on 31.08.15.
- */
-public class CalculationVerticle extends AbstractVerticle{
+
+public class CalculationVerticle extends io.vertx.rxjava.core.AbstractVerticle {
 
 
     public static final String ADDRESS_CALCULATION = "calculation";
@@ -14,7 +11,7 @@ public class CalculationVerticle extends AbstractVerticle{
     @Override
     public void start(Future<Void> startFuture) throws Exception {
         vertx.eventBus().consumer(ADDRESS_CALCULATION)
-                .handler(msg -> msg.reply(System.currentTimeMillis()))
+                .handler(msg -> msg.reply("from ("+hashCode()+") "+System.currentTimeMillis()))
                 .completionHandler(result -> {
                     if (result.succeeded())
                         startFuture.complete();
