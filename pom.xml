@@ -17,6 +17,7 @@
         <module>2_mavenverticle</module>
         <module>3_microlith</module>
         <module>4_microlith2</module>
+        <module>5_async</module>
     </modules>
 
 </project>
