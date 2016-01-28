@@ -7,6 +7,7 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.ext.sync.HandlerReceiverAdaptor;
 import io.vertx.ext.sync.SyncVerticle;
 
+import static io.vertx.ext.sync.Sync.awaitResult;
 import static io.vertx.ext.sync.Sync.streamAdaptor;
 
 public class SyncExampleVerticle extends SyncVerticle {

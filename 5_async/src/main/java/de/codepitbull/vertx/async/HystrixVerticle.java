@@ -2,8 +2,10 @@ package de.codepitbull.vertx.async;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandProperties;
 import io.vertx.core.Future;
 import io.vertx.rxjava.core.AbstractVerticle;
+import io.vertx.rxjava.core.Context;
 import rx.Observable;
 
 import static rx.observables.JoinObservable.from;
@@ -25,10 +27,12 @@ public class HystrixVerticle extends AbstractVerticle {
                         ))
                 .completionHandlerObservable();
 
+
+        Context ctx = vertx.getOrCreateContext();
         Observable<Void> hystrixObs = vertx.eventBus().<Integer>consumer(ADDRESS_HYSTRIX)
                 .handler(msg -> new BlockingHystrixCommand(msg.body())
                         .observe()
-                        .subscribe(val -> vertx.runOnContext(v -> msg.reply(val))))
+                        .subscribe(val -> ctx.runOnContext(v -> msg.reply(val))))
                 .completionHandlerObservable();
 
         when(
@@ -43,6 +47,15 @@ public class HystrixVerticle extends AbstractVerticle {
 
     private class BlockingHystrixCommand extends HystrixCommand<Integer> {
         private Integer add;
+
+        private Setter setter = Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("blocking"))
+                .andCommandPropertiesDefaults(
+                        HystrixCommandProperties.Setter()
+                                .withCircuitBreakerEnabled(true)
+                                .withCircuitBreakerErrorThresholdPercentage(5)
+                                .withExecutionTimeoutEnabled(true)
+                                .withExecutionTimeoutInMilliseconds(100)
+                );
 
         public BlockingHystrixCommand(Integer add) {
             super(HystrixCommandGroupKey.Factory.asKey("blocking"));

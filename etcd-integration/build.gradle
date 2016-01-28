@@ -1,0 +1,7 @@
+dependencies {
+    compile libraries.vertx_core
+    compile libraries.commons_lang3
+    testCompile libraries.vertx_web
+    testCompile libraries.vertx_unit
+    testCompile libraries.junit
+}

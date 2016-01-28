@@ -1,0 +1,21 @@
+configurations {
+    quasar
+}
+
+dependencies {
+    compile libraries.vertx_core
+    compile libraries.vertx_rx_java
+    compile libraries.vertx_sync
+    compile libraries.vertx_web
+    compile libraries.commons_lang3
+    compile libraries.hystrix_core
+    compile libraries.rxjava_joins
+    testCompile libraries.vertx_unit
+    testCompile libraries.junit
+    quasar libraries.quasar
+}
+
+
+test {
+    jvmArgs "-javaagent:${configurations.quasar.iterator().next()}"
+}

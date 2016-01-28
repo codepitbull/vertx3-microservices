@@ -1,0 +1,22 @@
+apply plugin: "com.github.johnrengelman.shadow"
+
+dependencies {
+    compile libraries.vertx_core
+    compile libraries.vertx_web
+    compile libraries.commons_lang3
+    compile libraries.vertx_hazelcast
+    testCompile libraries.vertx_unit
+    testCompile libraries.junit
+}
+
+mainClassName = 'io.vertx.core.Launcher'
+
+shadowJar {
+    classifier = 'fat'
+    manifest {
+        attributes 'Main-Verticle': 'de.codepitbull.vertx.fatjar.HttpVerticle'
+    }
+    mergeServiceFiles {
+        include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+    }
+}

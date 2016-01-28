@@ -7,7 +7,7 @@ import io.vertx.core.VertxOptions;
 import io.vertx.ext.dropwizard.DropwizardMetricsOptions;
 import io.vertx.ext.shell.ShellService;
 import io.vertx.ext.shell.ShellServiceOptions;
-import io.vertx.ext.shell.net.TelnetOptions;
+import io.vertx.ext.shell.term.TelnetTermOptions;
 
 /**
  * metrics-info vertx.http.servers.0.0.0.0:8000.get-requests
@@ -23,7 +23,7 @@ public class A_HttpVerticleWithDropwizardMain {
 
         ShellService service = ShellService.create(vertx,
                 new ShellServiceOptions().setTelnetOptions(
-                        new TelnetOptions().
+                        new TelnetTermOptions().
                                 setHost("localhost").
                                 setPort(4000)
                 )

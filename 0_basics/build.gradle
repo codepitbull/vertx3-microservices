@@ -1,0 +1,11 @@
+dependencies {
+    compile libraries.vertx_core
+    compile libraries.vertx_rx_java
+    compile libraries.vertx_web
+    compile libraries.vertx_dropwizard_metrics
+    compile libraries.commons_lang3
+    compile libraries.vertx_shell
+    compile libraries.vertx_hazelcast
+    testCompile libraries.vertx_unit
+    testCompile libraries.junit
+}

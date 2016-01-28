@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
+
+subprojects {
+    apply plugin: "java"
+    apply plugin: "maven"
+    apply plugin: "application"
+    group = "de.codepitbull.vertx.microservice"
+    version = "1.0-SNAPSHOT"
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    sourceCompatibility = '1.8'
+}
+
+def vertx_version = "3.2.0"
+
+ext.libraries = [
+        vertx_core:                     "io.vertx:vertx-core:$vertx_version",
+        vertx_rx_java:                  "io.vertx:vertx-rx-java:$vertx_version",
+        vertx_sync:                     "io.vertx:vertx-sync:$vertx_version",
+        vertx_shell:                    "io.vertx:vertx-shell:$vertx_version",
+        vertx_web:                      "io.vertx:vertx-web:$vertx_version",
+        vertx_auth_common:              "io.vertx:vertx-auth-common:$vertx_version",
+        vertx_hazelcast:                "io.vertx:vertx-hazelcast:$vertx_version",
+        vertx_maven_service_factory:    "io.vertx:vertx-maven-service-factory:$vertx_version",
+        vertx_dropwizard_metrics:       "io.vertx:vertx-dropwizard-metrics:$vertx_version",
+        vertx_when:                     "com.englishtown.vertx:vertx-when:4.0.0",
+        commons_lang3:                  "org.apache.commons:commons-lang3:3.3.2",
+        junit:                          "junit:junit:4.12",
+        vertx_unit:                     "io.vertx:vertx-unit:$vertx_version",
+        rxjava_joins:                   "io.reactivex:rxjava-joins:0.22.0",
+        hystrix_core:                   "com.netflix.hystrix:hystrix-core:1.4.18",
+        quasar:                         "co.paralleluniverse:quasar-core:0.7.4"
+]
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.8'
+}

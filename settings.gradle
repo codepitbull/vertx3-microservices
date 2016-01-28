@@ -1,0 +1,12 @@
+if (!JavaVersion.current().java8Compatible) {
+  throw new IllegalStateException('''A Haiku:
+                                    |  This needs Java 8,
+                                    |  You are using something else,
+                                    |  Refresh. Try again.'''.stripMargin())
+}
+include 'etcd-integration', '0_basics', '1_fatjar', '2_mavenverticle', '3_microlith', '4_microlith2', '5_async'
+
+rootProject.name = 'vertx3-microservices'
+project(':2_mavenverticle').name = "mavenverticle"
+
+

@@ -6,6 +6,7 @@ import io.vertx.core.Future;
 import io.vertx.ext.web.Router;
 
 
+@SuppressWarnings("Duplicates")
 public class Resource1Verticle extends AbstractVerticle {
 
     public static final String CONFIG_PORT = "port";

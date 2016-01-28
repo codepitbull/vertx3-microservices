@@ -24,9 +24,9 @@ public class HttpVerticleTest {
     @Test
     public void testHello(TestContext ctx) {
         Async async = ctx.async();
-        rule.vertx().createHttpClient().get(8000, "127.0.0.1", "/hello", res ->
+        rule.vertx().createHttpClient().get(8000, "127.0.0.1", "/serv1", res ->
                 res.bodyHandler(body -> {
-                    ctx.assertEquals("world", body.toString());
+                    ctx.assertTrue(body.toString().startsWith("I am"));
                     async.complete();
                 })).end();
     }

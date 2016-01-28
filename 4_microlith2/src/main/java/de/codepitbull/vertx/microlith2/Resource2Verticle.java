@@ -6,7 +6,9 @@ import io.vertx.core.Future;
 import io.vertx.ext.web.Router;
 
 
+@SuppressWarnings("Duplicates")
 public class Resource2Verticle extends AbstractVerticle {
+
     public static final String ADDRESS_CALCULATION = "calculation";
     public static final String CONFIG_PORT = "port";
     public static final String SERVICENAME = "service2";
@@ -20,10 +22,10 @@ public class Resource2Verticle extends AbstractVerticle {
         Router router = Router.router(vertx);
         router.get("/" + SERVICENAME + "/*").handler(req -> {
             vertx.eventBus().<String>send(ADDRESS_CALCULATION, 1, reply -> {
-                if(reply.failed())
-                    req.response().end("servic2 ("+hashCode()+") -> no reply");
+                if (reply.failed())
+                    req.response().end("servic2 (" + hashCode() + ") -> no reply");
                 else
-                    req.response().end("servic2 ("+hashCode()+") -> response: " + reply.result().body());
+                    req.response().end("servic2 (" + hashCode() + ") -> response: " + reply.result().body());
 
                 req.response().close();
             });

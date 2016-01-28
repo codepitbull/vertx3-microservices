@@ -19,7 +19,7 @@ public class WorkerVerticle extends AbstractVerticle {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupted();
         }
         msg.reply(msg.body() + 1);
     }
