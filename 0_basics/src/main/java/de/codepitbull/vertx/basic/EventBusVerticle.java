@@ -27,23 +27,4 @@ public class EventBusVerticle extends AbstractVerticle {
                     msg.reply(counter + " " + hashCode());
                 });
     }
-
-//    @Override
-//    public void start(Future<Void> startFuture) throws Exception {
-//        ConnectableObservable<Message<Integer>> cObs = vertx.eventBus()
-//                .<Integer>consumer(ADDRESS_REQUEST_COUNT)
-//                .toObservable().publish();
-//
-//        cObs.forEach(msg -> {
-//                counter += msg.body();
-//                LOG.info("COUNT: " + counter);
-//                msg.reply(counter + " " + hashCode());
-//            });
-//
-//        cObs.map(msg -> msg.body())
-//            .filter(msg -> msg > 0)
-//            .forEach(num -> LOG.info("Received "+num));
-//
-//        cObs.connect();
-//    }
 }

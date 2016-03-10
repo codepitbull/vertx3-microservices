@@ -10,6 +10,7 @@ public class B_HttpAndEventBusVerticleMain {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
         vertx.deployVerticle(HttpVerticle.class.getName(), new DeploymentOptions().setInstances(4));
+
         vertx.deployVerticle(EventBusVerticle.class.getName());
     }
 }
